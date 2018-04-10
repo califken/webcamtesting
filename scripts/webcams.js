@@ -40,6 +40,7 @@ $("#citySubmit").on("click", function() {
             var img = $("<img>");
              img.addClass("responsive-img");
             img.attr("src", data2.result.webcams[i].image.current.preview);
+             /**
             imagediv.html(img);
             card.html(imagediv);
             var cardcontent = $("<div>");
@@ -48,7 +49,8 @@ $("#citySubmit").on("click", function() {
             cardtitle.addClass("card-title");
             cardtitle.text(data2.result.webcams[i].title);
             cardcontent.html(cardtitle);
-            card.append(cardcontent);
+            card.append(cardcontent);**/
+             alert(img);
             $(".webcam").append(img);
         }
     });
