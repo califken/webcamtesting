@@ -38,6 +38,7 @@ $("#citySubmit").on("click", function() {
             var imagediv = $("<div>");
             imagediv.addClass("card-image");
             var img = $("<img>");
+             img.addClass("responsive-img");
             img.attr("src", data2.result.webcams[i].image.current.preview);
             imagediv.html(img);
             card.html(imagediv);
@@ -48,7 +49,7 @@ $("#citySubmit").on("click", function() {
             cardtitle.text(data2.result.webcams[i].title);
             cardcontent.html(cardtitle);
             card.append(cardcontent);
-            $(".webcam").append(card);
+            $(".webcam").append(img);
         }
     });
       // end ajax call 2
