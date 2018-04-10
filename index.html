@@ -1,10 +1,14 @@
-<!--Let browser know website is optimized for mobile-->
+
+  
+  <!--Let browser know website is optimized for mobile-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!--Import Google Icon Font-->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <!-- Compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 <link rel="stylesheet" href="assets/css/style.css">
+  
+  
 <header>
    <div class="navbar-fixed">
       <nav class="nav">
@@ -216,8 +220,151 @@
    </div>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="scripts/geolocation.js"></script>
-<script src="scripts/weather.js"></script>
-<script src="scripts/webcams.js"></script>
-</body>
-</html>
+<script>$("#citySubmit").on("click", function() {
+
+    var googleAPIkey = "AIzaSyDjoG9b-qqRgMcdpiNWXHei7WpRu1BmuBk";
+    var mapaddress = $("#citySearch").val();
+    var endpoint = "https://maps.googleapis.com/maps/api/geocode/json?address=" + mapaddress + "&key=" + googleAPIkey;
+
+  $.ajax({
+      url: endpoint,
+      type: "GET", // The HTTP Method
+      dataType: "json",
+      error: function(err) {
+        console.log(err);
+      }
+  }).done(function(data) {
+      lat = data.results[0].geometry.bounds.northeast.lat;
+      lon = data.results[0].geometry.bounds.northeast.lng;
+    
+    $("#lat").val(lat);
+    $("#lon").val(lon);
+    
+      lat2 = data.results[0].geometry.bounds.southwest.lat;
+      lon2 = data.results[0].geometry.bounds.southwest.lng;
+    
+    
+    $("#lat2").val(lat2);
+    $("#lon2").val(lon2);
+    
+      // lat  and lon perameters 
+    console.log(lat+lon+lat2+lon2);
+ });
+    // end ajax call 1
+});
+
+
+
+
+$("#citySubmit").on("click", function() {
+
+//OpenWeatherMap API
+var weatherAPIKey = "743a4ef3c30935fe19ecbad14f631fae";
+
+var lat = $("#lat").val();
+var lon = $("#lon").val();
+var weatherQueryURL = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&APPID=" + weatherAPIKey;
+console.log(weatherQueryURL);
+
+// Performing our AJAX GET request
+$.ajax({
+        url: weatherQueryURL,
+        method: "GET"
+    })
+    // After the data comes back from the API
+    .then(function(response) {
+        //Storing an array of results in the results variable
+        var weatherData = response.weather;
+        //A div to hold the weather data
+        var weatherDiv = $("<div class='weather-divs'>");
+        //Set a variable to the temp from the API
+        var placeTemp = response.main.temp;
+        //Convert temp from Kelvin to Fahrenheit
+        var tempF = Math.floor(placeTemp * (9 / 5) - 459.67);
+        //Creating an element to have the temp displayed
+        $("#high-temp-text").text(tempF);
+        var pTemp = $("<p style='font-weight: bold;'>").text("Temp: " + tempF + "F");
+        //Set a variable to the weather description
+        var weatherDesc = response.weather[0].description;
+        //Method for weather desc string to capitalize first letter of each word 
+        weatherDesc = weatherDesc.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+            return letter.toUpperCase();
+        });
+        //Create a paragraph element to display the weather description
+        var pDesc = $("<p>").text(weatherDesc);
+        // Set a variable to the icon code for the current weather
+        var iconCode = response.weather[0].icon;
+        var iconURL = "https://openweathermap.org/img/w/" + iconCode + ".png";
+        console.log(iconURL);
+        var iconHTML = $("<img>");
+        iconHTML.attr("src", iconURL);
+        iconHTML.attr("class", "weather-icon");
+        //Update weather div with the temp and weather icon
+        weatherDiv.append(pTemp, pDesc, iconHTML);
+        //Update page with the weather div content
+        $("#result").append(weatherDiv);
+    });
+
+
+});
+
+
+
+
+
+$("#citySubmit").on("click", function() {
+
+var lat = $("#lat").val();
+
+var lon = $("#lon").val();
+
+var lat2 = $("#lat2").val() + 2;
+
+var lon2 = $("#lon2").val() + 2;
+
+
+   var mashapeauthkey = "Eg0ZQFdgZrmshgRuNT3elKYlPu0Mp1yQbzPjsnIocSuKYu0yV5";
+   //use lat lon from alt app to populate coordinates
+
+   var endpoint2 =
+   "https://webcamstravel.p.mashape.com/webcams/list/bbox=" + lat + "," + lon + "," + lat2 + "," + lon2 + "?show=webcams%3Aimage%2Clocation";
+console.log(endpoint2);
+
+
+$.ajax({
+   url: endpoint2,
+   type: "POST", // The HTTP Method
+   data: {},
+   dataType: "json",
+   error: function(err) {
+   console.log(err);
+   },
+   beforeSend: function(xhr) {
+     xhr.setRequestHeader("X-Mashape-Authorization", mashapeauthkey);
+   }
+}).done(function(data2) {
+ 
+   console.log(data2);
+   for (var i = 0; i < data2.result.webcams.length; i++) {
+       // create a "card" variable, it's going to be a div
+       var card = $("<div>");
+       card.addClass("card");
+       var imagediv = $("<div>");
+       imagediv.addClass("card-image");
+       var img = $("<img>");
+       img.attr("src", data2.result.webcams[i].image.current.preview);
+       imagediv.html(img);
+       card.html(imagediv);
+       var cardcontent = $("<div>");
+       cardcontent.addClass("card-content");
+       var cardtitle = $("<div>");
+       cardtitle.addClass("card-title");
+       cardtitle.text(data2.result.webcams[i].title);
+       cardcontent.html(cardtitle);
+       card.append(cardcontent);
+       $(".webcam").append(card);
+   }
+});
+ // end ajax call 2
+});
+</script>
